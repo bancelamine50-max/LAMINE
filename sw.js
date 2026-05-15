@@ -1,4 +1,4 @@
-const CACHE_NAME = 'memoire-pro-v1';
+const CACHE_NAME = 'jeu-elevio-v1';
 const ASSETS = [
   './',
   './index.html',
