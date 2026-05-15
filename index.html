@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Memoire Pro Lamine Bance</title>
     
-    <!-- Configuration Application Mobile (PWA) -->
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Memoire Pro">
@@ -13,88 +13,39 @@
     <meta name="theme-color" content="#6366f1">
     <link rel="apple-touch-icon" href="logo-transparent.png">
 
-    <!-- Manifeste Web JSON -->
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22/index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo-transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+    <!-- Manifeste Web (Inline pour simplifier sur GitHub) -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22./index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo-transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #f8fafc;
-            --primary: #6366f1;
-        }
+        :root { --bg-color: #f8fafc; --primary: #6366f1; }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 20px 20px;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 10px;
-            overscroll-behavior: contain;
+            display: flex; justify-content: center; align-items: center;
+            margin: 0; padding: 10px; overscroll-behavior: contain;
         }
-        .memory-card {
-            perspective: 1000px;
-            aspect-ratio: 1 / 1;
-            cursor: pointer;
-        }
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-        .memory-card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        .card-front {
-            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-            color: white;
-        }
-        .card-back {
-            background: white;
-            transform: rotateY(180deg);
-            border: 2px solid #e2e8f0;
-        }
-        .matched .card-back {
-            background-color: #f0fdf4;
-            border-color: #86efac;
-            animation: match-pulse 0.5s ease-out;
-        }
-        @keyframes match-pulse {
-            0% { transform: rotateY(180deg) scale(1); }
-            50% { transform: rotateY(180deg) scale(1.05); }
-            100% { transform: rotateY(180deg) scale(1); }
-        }
-        #modal-win, #modal-install {
-            display: none;
-            backdrop-filter: blur(8px);
-        }
+        .memory-card { perspective: 1000px; aspect-ratio: 1/1; cursor: pointer; }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .memory-card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card-front { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; }
+        .card-back { background: white; transform: rotateY(180deg); border: 2px solid #e2e8f0; }
+        .matched .card-back { background-color: #f0fdf4; border-color: #86efac; animation: match-pulse 0.5s ease-out; }
+        @keyframes match-pulse { 0%, 100% { transform: rotateY(180deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } }
+        #modal-win, #modal-install { display: none; backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="bg-slate-50">
+<body>
 
     <div class="max-w-md w-full">
         <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
             <header class="text-center mb-6">
                 <div class="flex justify-center mb-4">
-                    <!-- Conteneur du logo -->
                     <div id="logo-container" class="h-16 w-16 flex items-center justify-center bg-indigo-50 rounded-2xl overflow-hidden border border-indigo-100">
                         <img id="app-logo" src="logo-transparent.png" alt="Logo" class="h-full w-full object-contain hidden">
                         <span id="logo-fallback" class="text-3xl">🧩</span>
@@ -104,219 +55,125 @@
                 <p class="text-slate-500 text-sm font-medium">Entraînez votre cerveau au quotidien</p>
             </header>
 
-            <!-- Guide d'installation rapide -->
             <div id="install-banner" class="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex flex-col items-center gap-3">
                 <div class="text-center">
-                    <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Jouer en mode Application</h2>
-                    <p class="text-indigo-900 text-sm font-semibold text-center">Ajoutez le jeu à votre écran d'accueil</p>
+                    <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Application Mobile</h2>
+                    <p class="text-indigo-900 text-sm font-semibold">Installez le jeu sur votre écran</p>
                 </div>
-                <button onclick="document.getElementById('modal-install').style.display='flex'" class="text-xs bg-indigo-600 text-white px-4 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors">
-                    Mode d'emploi
+                <button id="pwa-install-btn" class="text-xs bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors hidden">
+                    Installer l'App
+                </button>
+                <button onclick="document.getElementById('modal-install').style.display='flex'" class="text-[10px] text-indigo-400 underline">
+                    Instructions d'installation
                 </button>
             </div>
 
-            <!-- Menu de sélection de thème -->
-            <div class="flex justify-center gap-2 mb-6">
-                <button onclick="setTheme('space')" id="btn-space" class="theme-btn px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border-2 border-indigo-200">🚀 Espace</button>
-                <button onclick="setTheme('animals')" id="btn-animals" class="theme-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200">🦁 Animaux</button>
-                <button onclick="setTheme('food')" id="btn-food" class="theme-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200">🍕 Food</button>
-            </div>
+            <div id="grid" class="grid grid-cols-4 gap-3"></div>
 
-            <!-- Statistiques -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-2 gap-4 mt-6">
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-center">
-                    <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Coups</span>
-                    <span id="moves" class="text-2xl font-black text-slate-700">0</span>
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Coups</span>
+                    <span id="moves" class="text-xl font-black text-slate-700">0</span>
                 </div>
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-center">
-                    <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Temps</span>
-                    <span id="timer" class="text-2xl font-black text-slate-700">00:00</span>
-                </div>
+                <button onclick="initGame()" class="bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 transition-all">
+                    Reset
+                </button>
             </div>
-
-            <div id="grid" class="grid grid-cols-4 gap-3">
-                <!-- Les cartes arrivent ici -->
-            </div>
-
-            <button onclick="initGame()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                </svg>
-                Réinitialiser
-            </button>
         </div>
     </div>
 
-    <!-- Modal Instructions Installation -->
+    <!-- Modals -->
     <div id="modal-install" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-            <h2 class="text-xl font-bold text-slate-800 mb-4 text-center">Comment Installer</h2>
-            
-            <div class="space-y-6">
-                <div class="flex gap-4">
-                    <div class="text-2xl">🤖</div>
-                    <div>
-                        <p class="font-bold text-slate-700 text-sm">Sur Android (Chrome)</p>
-                        <p class="text-slate-500 text-xs text-pretty">
-                            Cliquez sur les <span class="font-bold text-slate-800">3 points ⋮</span> en haut à droite et sélectionnez <span class="text-indigo-600 font-bold">"Installer l'application"</span> ou <span class="text-indigo-600 font-bold">"Ajouter à l'écran d'accueil"</span>.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <div class="text-2xl">🍏</div>
-                    <div>
-                        <p class="font-bold text-slate-700 text-sm">Sur iPhone (Safari)</p>
-                        <p class="text-slate-500 text-xs text-pretty">
-                            Appuyez sur l'icône de <span class="font-bold text-slate-800">Partage</span> (le carré avec une flèche), puis descendez pour choisir <span class="text-indigo-600 font-bold">"Sur l'écran d'accueil"</span>.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full mt-8 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors">J'ai compris</button>
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
+            <h2 class="text-lg font-bold mb-4">Installation</h2>
+            <p class="text-sm text-slate-600 mb-6">Sur Android, cliquez sur le bouton "Installer". Sur iPhone, utilisez le menu de partage de Safari et "Sur l'écran d'accueil".</p>
+            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full bg-slate-100 py-3 rounded-xl font-bold">OK</button>
         </div>
     </div>
 
-    <!-- Modal de victoire -->
     <div id="modal-win" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
-        <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl transform scale-110">
-            <div class="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">🏆</div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Magnifique !</h2>
-            <p class="text-slate-500 mb-6">Vous avez terminé en <span id="final-moves" class="font-bold text-indigo-600"></span> coups et <span id="final-time" class="font-bold text-indigo-600"></span>.</p>
-            <button onclick="initGame()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors">Rejouer</button>
+        <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
+            <div class="text-4xl mb-4">🏆</div>
+            <h2 class="text-2xl font-bold mb-2">Bravo !</h2>
+            <p class="text-slate-500 mb-6">Fini en <span id="final-moves" class="font-bold text-indigo-600"></span> coups.</p>
+            <button onclick="initGame()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Rejouer</button>
         </div>
     </div>
 
     <script>
+        // Enregistrement SW
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
+            });
+        }
+
+        // Prompt Installation
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwa-install-btn');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden');
+        });
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.classList.add('hidden');
+                deferredPrompt = null;
+            }
+        });
+
+        // Jeu
         const appLogo = document.getElementById('app-logo');
         const logoFallback = document.getElementById('logo-fallback');
-        
-        // Gestion de l'affichage du logo
-        appLogo.onload = () => {
-            appLogo.classList.remove('hidden');
-            logoFallback.classList.add('hidden');
-        };
+        appLogo.onload = () => { appLogo.classList.remove('hidden'); logoFallback.classList.add('hidden'); };
 
-        appLogo.onerror = () => {
-            appLogo.classList.add('hidden');
-            logoFallback.classList.remove('hidden');
-            console.warn("L'image 'logo-transparent.png' n'a pas pu être chargée.");
-        };
-
-        const themes = {
-            space: ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'],
-            animals: ['🐶', '🐱', '🦁', '🐯', '🐼', '🐨', '🦊', '🐸'],
-            food: ['🍕', '🍔', '🍟', '🍦', '🍩', '🍎', '🍓', '🍣']
-        };
-
-        let currentTheme = 'space';
+        const items = ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'];
         let flippedCards = [];
         let lockBoard = false;
         let moves = 0;
         let matchedPairs = 0;
-        let timerSeconds = 0;
-        let timerInterval = null;
-
-        const gridEl = document.getElementById('grid');
-        const movesEl = document.getElementById('moves');
-        const timerEl = document.getElementById('timer');
-        const modal = document.getElementById('modal-win');
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            timerSeconds = 0;
-            timerInterval = setInterval(() => {
-                timerSeconds++;
-                const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-                const secs = (timerSeconds % 60).toString().padStart(2, '0');
-                timerEl.innerText = `${mins}:${secs}`;
-            }, 1000);
-        }
-
-        function setTheme(theme) {
-            currentTheme = theme;
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-                btn.classList.add('bg-slate-100', 'text-slate-600', 'border-transparent');
-            });
-            const activeBtn = document.getElementById(`btn-${theme}`);
-            activeBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-            initGame();
-        }
 
         function initGame() {
+            const gridEl = document.getElementById('grid');
             gridEl.innerHTML = '';
-            moves = 0;
-            matchedPairs = 0;
-            movesEl.innerText = moves;
-            timerEl.innerText = "00:00";
-            flippedCards = [];
-            lockBoard = false;
-            modal.style.display = 'none';
+            moves = 0; matchedPairs = 0;
+            document.getElementById('moves').innerText = '0';
+            document.getElementById('modal-win').style.display = 'none';
             
-            startTimer();
-
-            const items = [...themes[currentTheme], ...themes[currentTheme]];
-            items.sort(() => Math.random() - 0.5);
-
-            items.forEach((emoji) => {
+            const cards = [...items, ...items].sort(() => Math.random() - 0.5);
+            cards.forEach(emoji => {
                 const card = document.createElement('div');
                 card.className = 'memory-card';
                 card.dataset.emoji = emoji;
-                card.innerHTML = `
-                    <div class="card-inner">
-                        <div class="card-front"></div>
-                        <div class="card-back">${emoji}</div>
-                    </div>
-                `;
-                card.addEventListener('click', flipCard);
+                card.innerHTML = `<div class="card-inner"><div class="card-front"></div><div class="card-back">${emoji}</div></div>`;
+                card.onclick = flipCard;
                 gridEl.appendChild(card);
             });
         }
 
         function flipCard() {
             if (lockBoard || this.classList.contains('flipped')) return;
-
             this.classList.add('flipped');
             flippedCards.push(this);
-
             if (flippedCards.length === 2) {
-                moves++;
-                movesEl.innerText = moves;
-                checkMatch();
+                moves++; document.getElementById('moves').innerText = moves;
+                const [c1, c2] = flippedCards;
+                if (c1.dataset.emoji === c2.dataset.emoji) {
+                    c1.classList.add('matched'); c2.classList.add('matched');
+                    matchedPairs++; flippedCards = [];
+                    if (matchedPairs === items.length) {
+                        document.getElementById('final-moves').innerText = moves;
+                        setTimeout(() => document.getElementById('modal-win').style.display = 'flex', 500);
+                    }
+                } else {
+                    lockBoard = true;
+                    setTimeout(() => { c1.classList.remove('flipped'); c2.classList.remove('flipped'); flippedCards = []; lockBoard = false; }, 800);
+                }
             }
         }
-
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            const isMatch = card1.dataset.emoji === card2.dataset.emoji;
-
-            if (isMatch) {
-                card1.classList.add('matched');
-                card2.classList.add('matched');
-                matchedPairs++;
-                flippedCards = [];
-                if (matchedPairs === themes[currentTheme].length) endGame();
-            } else {
-                lockBoard = true;
-                setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
-                    flippedCards = [];
-                    lockBoard = false;
-                }, 800);
-            }
-        }
-
-        function endGame() {
-            clearInterval(timerInterval);
-            document.getElementById('final-moves').innerText = moves;
-            document.getElementById('final-time').innerText = timerEl.innerText;
-            setTimeout(() => {
-                modal.style.display = 'flex';
-            }, 500);
-        }
-
         window.onload = initGame;
     </script>
 </body>
