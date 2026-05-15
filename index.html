@@ -40,6 +40,14 @@
         .matched .card-back { background-color: #f0fdf4; border-color: #86efac; animation: match-pulse 0.5s ease-out; }
         @keyframes match-pulse { 0%, 100% { transform: rotateY(180deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } }
         #modal-win, #modal-install, #modal-rules { display: none; backdrop-filter: blur(8px); }
+        
+        /* Animation pour le bouton d'installation */
+        @keyframes pulse-indigo {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        .pulse-btn { animation: pulse-indigo 2s infinite; }
     </style>
 </head>
 <body>
@@ -68,10 +76,15 @@
             <div id="install-banner" class="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex flex-col items-center gap-3">
                 <div class="text-center">
                     <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Application ELEVIO</h2>
-                    <p class="text-indigo-900 text-sm font-semibold">Ajouter à l'écran d'accueil</p>
+                    <p id="install-text" class="text-indigo-900 text-sm font-semibold">Installez le jeu sur votre mobile</p>
                 </div>
-                <button id="pwa-install-btn" class="text-xs bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors hidden">
+                <!-- Bouton pour Android/Chrome Desktop -->
+                <button id="pwa-install-btn" class="text-xs bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors hidden pulse-btn">
                     INSTALLER MAINTENANT
+                </button>
+                <!-- Info pour iOS -->
+                <button id="ios-info-btn" onclick="document.getElementById('modal-install').style.display='flex'" class="text-[10px] text-indigo-400 underline hidden">
+                    Instructions iPhone
                 </button>
             </div>
 
@@ -105,6 +118,22 @@
         </div>
     </div>
 
+    <!-- Fenêtre d'aide Installation (iOS) -->
+    <div id="modal-install" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center">
+            <h2 class="text-xl font-bold mb-4 text-slate-800">Installer sur iPhone</h2>
+            <div class="text-sm text-slate-600 space-y-4 mb-6">
+                <p>1. Appuyez sur le bouton <strong>Partager</strong> en bas de Safari.</p>
+                <div class="flex justify-center py-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                </div>
+                <p>2. Faites défiler et choisissez <strong>Sur l'écran d'accueil</strong>.</p>
+                <p>3. Appuyez sur <strong>Ajouter</strong> en haut à droite.</p>
+            </div>
+            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl uppercase">C'est fait !</button>
+        </div>
+    </div>
+
     <!-- Fenêtre de Victoire -->
     <div id="modal-win" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
         <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
@@ -116,29 +145,49 @@
     </div>
 
     <script>
-        // Enregistrement du Service Worker (sw.js)
+        // Enregistrement du Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW enregistré !');
+                }).catch(err => console.log('SW Error', err));
             });
         }
 
-        // Gestion de l'installation PWA
-        let deferredPrompt;
+        // Détection de la plateforme
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const iosBtn = document.getElementById('ios-info-btn');
         const installBtn = document.getElementById('pwa-install-btn');
+        const installText = document.getElementById('install-text');
+
+        // Gestion de l'installation PWA (Android/PC)
+        let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('Event beforeinstallprompt capturé');
             e.preventDefault();
             deferredPrompt = e;
+            
+            // On affiche le bouton d'installation
             installBtn.classList.remove('hidden');
+            installText.innerText = "Jouez en plein écran !";
         });
+
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.classList.add('hidden');
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                    installText.innerText = "Installation en cours...";
+                }
                 deferredPrompt = null;
             }
         });
+
+        // Affichage spécifique pour iOS (Safari ne supporte pas beforeinstallprompt)
+        if (isIOS && !window.navigator.standalone) {
+            iosBtn.classList.remove('hidden');
+        }
 
         // Affichage du Logo ou Fallback
         const appLogo = document.getElementById('app-logo');
@@ -160,7 +209,6 @@
             document.getElementById('moves').innerText = '0';
             document.getElementById('modal-win').style.display = 'none';
             
-            // Mélange des cartes
             const cards = [...items, ...items].sort(() => Math.random() - 0.5);
             
             cards.forEach(emoji => {
