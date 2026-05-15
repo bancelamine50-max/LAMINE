@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Mémoire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1 / 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .memory-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            user-select: none;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Ajouter un motif sur le dos de la carte */
+        .card-front::after {
+            content: "?";
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            border: 2px solid #e0e7ff;
+        }
+
+        .matched {
+            animation: pulse-match 0.5s ease-in-out;
+        }
+
+        @keyframes pulse-match {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 15px #34d399; }
+            100% { transform: scale(1); }
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            animation: popIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            to { transform: scale(1); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            color: white;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            outline: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1 class="text-3xl font-extrabold text-center text-indigo-900 mb-2">Mémoire Spatiale</h1>
+        
+        <div class="flex justify-between items-center mb-6 bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+            <div class="text-indigo-800 font-semibold">
+                Coups: <span id="moves" class="text-indigo-600 text-xl ml-1">0</span>
+            </div>
+            <button onclick="initGame()" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Recommencer
+            </button>
+        </div>
+
+        <div id="grid" class="memory-grid">
+            <!-- Les cartes seront générées ici par JavaScript -->
+        </div>
+    </div>
+
+    <div id="modal">
+        <div class="modal-content">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">Bravo !</h2>
+            <p class="text-gray-600 mb-6 text-lg">Vous avez trouvé toutes les paires en <strong id="final-moves" class="text-indigo-600 text-xl">0</strong> coups.</p>
+            <button onclick="initGame()" class="btn w-full text-lg">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        // Thème spatial pour les emojis
+        const emojis = ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'];
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        const gridEl = document.getElementById('grid');
+        const movesEl = document.getElementById('moves');
+        const modal = document.getElementById('modal');
+        const finalMovesEl = document.getElementById('final-moves');
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function initGame() {
+            // Réinitialiser les variables
+            gridEl.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesEl.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
+            modal.style.display = 'none';
+
+            // Créer les paires et mélanger
+            cards = [...emojis, ...emojis];
+            cards = shuffle(cards);
+
+            // Créer les éléments HTML pour chaque carte
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.classList.add('memory-card');
+                card.dataset.emoji = emoji; // Stocker l'emoji pour la comparaison
+                
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front"></div>
+                        <div class="card-back">${emoji}</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', flipCard);
+                gridEl.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return; // Empêcher de cliquer pendant l'animation
+            if (this === firstCard) return; // Empêcher de double-cliquer sur la même carte
+
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                // Premier clic
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            // Deuxième clic
+            secondCard = this;
+            moves++;
+            movesEl.innerText = moves;
+            
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+
+            if (isMatch) {
+                disableCards();
+            } else {
+                unflipCards();
+            }
+        }
+
+        function disableCards() {
+            // Les cartes correspondent
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            // Effet visuel de validation
+            firstCard.querySelector('.card-inner').classList.add('matched');
+            secondCard.querySelector('.card-inner').classList.add('matched');
+
+            matchedPairs++;
+            
+            // Vérifier si le joueur a gagné
+            if (matchedPairs === emojis.length) {
+                setTimeout(() => {
+                    finalMovesEl.innerText = moves;
+                    modal.style.display = 'flex';
+                }, 800);
+            }
+
+            resetBoard();
+        }
+
+        function unflipCards() {
+            // Les cartes ne correspondent pas
+            lockBoard = true; // Bloquer la grille
+
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000); // Attendre 1 seconde avant de les retourner
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // Lancer le jeu au chargement de la page
+        initGame();
+    </script>
+</body>
+</html>
