@@ -39,13 +39,19 @@
         .card-back { background: white; transform: rotateY(180deg); border: 2px solid #e2e8f0; }
         .matched .card-back { background-color: #f0fdf4; border-color: #86efac; animation: match-pulse 0.5s ease-out; }
         @keyframes match-pulse { 0%, 100% { transform: rotateY(180deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } }
-        #modal-win, #modal-install { display: none; backdrop-filter: blur(8px); }
+        #modal-win, #modal-install, #modal-rules { display: none; backdrop-filter: blur(8px); }
     </style>
 </head>
 <body>
 
     <div class="max-w-md w-full">
-        <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
+        <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200 relative">
+            
+            <!-- Bouton Aide -->
+            <button onclick="document.getElementById('modal-rules').style.display='flex'" class="absolute top-6 right-6 text-slate-400 hover:text-indigo-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </button>
+
             <header class="text-center mb-6">
                 <!-- Zone Logo -->
                 <div class="flex justify-center mb-4">
@@ -55,7 +61,7 @@
                     </div>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight uppercase">ELEVIO GAME</h1>
-                <p class="text-slate-500 text-sm font-medium">Défi Mémoire Premium</p>
+                <p class="text-slate-500 text-sm font-medium">Défi de Mémoire Visuelle</p>
             </header>
 
             <!-- Bannière d'installation PWA -->
@@ -82,6 +88,20 @@
                     Recommencer
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Fenêtre des Règles -->
+    <div id="modal-rules" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 text-slate-800">Comment jouer ?</h2>
+            <ul class="text-sm text-slate-600 space-y-3 mb-6">
+                <li class="flex gap-2"><span>1.</span> Retournez deux cartes pour voir les symboles.</li>
+                <li class="flex gap-2"><span>2.</span> Si les symboles sont identiques, elles restent visibles.</li>
+                <li class="flex gap-2"><span>3.</span> Sinon, elles se cachent à nouveau après un court instant.</li>
+                <li class="flex gap-2"><span>4.</span> Trouvez toutes les paires en un minimum de coups !</li>
+            </ul>
+            <button onclick="document.getElementById('modal-rules').style.display='none'" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl uppercase">J'ai compris</button>
         </div>
     </div>
 
@@ -169,7 +189,6 @@
                 const [c1, c2] = flippedCards;
                 
                 if (c1.dataset.emoji === c2.dataset.emoji) {
-                    // Match trouvé
                     c1.classList.add('matched'); 
                     c2.classList.add('matched');
                     matchedPairs++; 
@@ -180,7 +199,6 @@
                         setTimeout(() => document.getElementById('modal-win').style.display = 'flex', 500);
                     }
                 } else {
-                    // Pas de match
                     lockBoard = true;
                     setTimeout(() => { 
                         c1.classList.remove('flipped'); 
@@ -192,7 +210,6 @@
             }
         }
 
-        // Lancement initial
         window.onload = initGame;
     </script>
 </body>
