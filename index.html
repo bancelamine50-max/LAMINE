@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Memoire Pro Lamine Bance</title>
+    <title>ELEVIO GAME</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- Configuration PWA pour Mobile -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Memoire Pro">
+    <meta name="apple-mobile-web-app-title" content="ELEVIO GAME">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#6366f1">
     <link rel="apple-touch-icon" href="logo-transparent.png">
 
-    <!-- Manifeste Web (Inline pour simplifier sur GitHub) -->
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22./index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo-transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+    <!-- Manifeste Web (Utilise le nom ELEVIO GAME) -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22ELEVIO%20GAME%22,%22short_name%22:%22ELEVIO%22,%22start_url%22:%22./index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo-transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
 
+    <!-- Styles et Polices -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -29,6 +30,7 @@
             display: flex; justify-content: center; align-items: center;
             margin: 0; padding: 10px; overscroll-behavior: contain;
         }
+        /* Style des cartes */
         .memory-card { perspective: 1000px; aspect-ratio: 1/1; cursor: pointer; }
         .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
         .memory-card.flipped .card-inner { transform: rotateY(180deg); }
@@ -45,70 +47,63 @@
     <div class="max-w-md w-full">
         <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
             <header class="text-center mb-6">
+                <!-- Zone Logo -->
                 <div class="flex justify-center mb-4">
                     <div id="logo-container" class="h-16 w-16 flex items-center justify-center bg-indigo-50 rounded-2xl overflow-hidden border border-indigo-100">
                         <img id="app-logo" src="logo-transparent.png" alt="Logo" class="h-full w-full object-contain hidden">
-                        <span id="logo-fallback" class="text-3xl">🧩</span>
+                        <span id="logo-fallback" class="text-3xl">🎮</span>
                     </div>
                 </div>
-                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Memoire Pro Lamine Bance</h1>
-                <p class="text-slate-500 text-sm font-medium">Entraînez votre cerveau au quotidien</p>
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight uppercase">ELEVIO GAME</h1>
+                <p class="text-slate-500 text-sm font-medium">Défi Mémoire Premium</p>
             </header>
 
+            <!-- Bannière d'installation PWA -->
             <div id="install-banner" class="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex flex-col items-center gap-3">
                 <div class="text-center">
-                    <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Application Mobile</h2>
-                    <p class="text-indigo-900 text-sm font-semibold">Installez le jeu sur votre écran</p>
+                    <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Application ELEVIO</h2>
+                    <p class="text-indigo-900 text-sm font-semibold">Ajouter à l'écran d'accueil</p>
                 </div>
                 <button id="pwa-install-btn" class="text-xs bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors hidden">
-                    Installer l'App
-                </button>
-                <button onclick="document.getElementById('modal-install').style.display='flex'" class="text-[10px] text-indigo-400 underline">
-                    Instructions d'installation
+                    INSTALLER MAINTENANT
                 </button>
             </div>
 
+            <!-- Grille du jeu -->
             <div id="grid" class="grid grid-cols-4 gap-3"></div>
 
+            <!-- Statistiques et Contrôles -->
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-center">
                     <span class="block text-[10px] uppercase font-bold text-slate-400">Coups</span>
                     <span id="moves" class="text-xl font-black text-slate-700">0</span>
                 </div>
-                <button onclick="initGame()" class="bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 transition-all">
-                    Reset
+                <button onclick="initGame()" class="bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 transition-all uppercase text-sm">
+                    Recommencer
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="modal-install" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
-            <h2 class="text-lg font-bold mb-4">Installation</h2>
-            <p class="text-sm text-slate-600 mb-6">Sur Android, cliquez sur le bouton "Installer". Sur iPhone, utilisez le menu de partage de Safari et "Sur l'écran d'accueil".</p>
-            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full bg-slate-100 py-3 rounded-xl font-bold">OK</button>
-        </div>
-    </div>
-
+    <!-- Fenêtre de Victoire -->
     <div id="modal-win" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
         <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
             <div class="text-4xl mb-4">🏆</div>
-            <h2 class="text-2xl font-bold mb-2">Bravo !</h2>
-            <p class="text-slate-500 mb-6">Fini en <span id="final-moves" class="font-bold text-indigo-600"></span> coups.</p>
-            <button onclick="initGame()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Rejouer</button>
+            <h2 class="text-2xl font-bold mb-2">Victoire !</h2>
+            <p class="text-slate-500 mb-6">Score : <span id="final-moves" class="font-bold text-indigo-600"></span> tentatives.</p>
+            <button onclick="initGame()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl uppercase tracking-wide">Jouer à nouveau</button>
         </div>
     </div>
 
     <script>
-        // Enregistrement SW
+        // Enregistrement du Service Worker (sw.js)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
             });
         }
 
-        // Prompt Installation
+        // Gestion de l'installation PWA
         let deferredPrompt;
         const installBtn = document.getElementById('pwa-install-btn');
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -125,12 +120,13 @@
             }
         });
 
-        // Jeu
+        // Affichage du Logo ou Fallback
         const appLogo = document.getElementById('app-logo');
         const logoFallback = document.getElementById('logo-fallback');
         appLogo.onload = () => { appLogo.classList.remove('hidden'); logoFallback.classList.add('hidden'); };
 
-        const items = ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'];
+        // Configuration et Logique du Jeu
+        const items = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🥝', '🍉'];
         let flippedCards = [];
         let lockBoard = false;
         let moves = 0;
@@ -139,16 +135,23 @@
         function initGame() {
             const gridEl = document.getElementById('grid');
             gridEl.innerHTML = '';
-            moves = 0; matchedPairs = 0;
+            moves = 0; 
+            matchedPairs = 0;
             document.getElementById('moves').innerText = '0';
             document.getElementById('modal-win').style.display = 'none';
             
+            // Mélange des cartes
             const cards = [...items, ...items].sort(() => Math.random() - 0.5);
+            
             cards.forEach(emoji => {
                 const card = document.createElement('div');
                 card.className = 'memory-card';
                 card.dataset.emoji = emoji;
-                card.innerHTML = `<div class="card-inner"><div class="card-front"></div><div class="card-back">${emoji}</div></div>`;
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front"></div>
+                        <div class="card-back">${emoji}</div>
+                    </div>`;
                 card.onclick = flipCard;
                 gridEl.appendChild(card);
             });
@@ -156,24 +159,40 @@
 
         function flipCard() {
             if (lockBoard || this.classList.contains('flipped')) return;
+            
             this.classList.add('flipped');
             flippedCards.push(this);
+            
             if (flippedCards.length === 2) {
-                moves++; document.getElementById('moves').innerText = moves;
+                moves++; 
+                document.getElementById('moves').innerText = moves;
                 const [c1, c2] = flippedCards;
+                
                 if (c1.dataset.emoji === c2.dataset.emoji) {
-                    c1.classList.add('matched'); c2.classList.add('matched');
-                    matchedPairs++; flippedCards = [];
+                    // Match trouvé
+                    c1.classList.add('matched'); 
+                    c2.classList.add('matched');
+                    matchedPairs++; 
+                    flippedCards = [];
+                    
                     if (matchedPairs === items.length) {
                         document.getElementById('final-moves').innerText = moves;
                         setTimeout(() => document.getElementById('modal-win').style.display = 'flex', 500);
                     }
                 } else {
+                    // Pas de match
                     lockBoard = true;
-                    setTimeout(() => { c1.classList.remove('flipped'); c2.classList.remove('flipped'); flippedCards = []; lockBoard = false; }, 800);
+                    setTimeout(() => { 
+                        c1.classList.remove('flipped'); 
+                        c2.classList.remove('flipped'); 
+                        flippedCards = []; 
+                        lockBoard = false; 
+                    }, 800);
                 }
             }
         }
+
+        // Lancement initial
         window.onload = initGame;
     </script>
 </body>
