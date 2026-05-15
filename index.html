@@ -3,161 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELEVIO GAME PRO</title>
+    <title>Jeu de Mémoire - Animaux & Fruits</title>
     
-    <!-- Configuration PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ELEVIO">
-    <meta name="theme-color" content="#6366f1">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5690/5690529.png">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22ELEVIO%20GAME%22,%22short_name%22:%22ELEVIO%22,%22start_url%22:%22./index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/5690/5690529.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: #f3f4f6;
             min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            margin: 0; padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 15px;
         }
-        .memory-card { perspective: 1000px; aspect-ratio: 1/1; cursor: pointer; height: 100%; }
-        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-        .memory-card.flipped .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .card-front { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); border: 2px solid #fff; }
-        .card-back { background: white; transform: rotateY(180deg); border: 2px solid #e2e8f0; font-size: 1.5rem; }
-        .matched .card-back { background-color: #f0fdf4; border-color: #86efac; animation: success-pop 0.4s ease-out; }
-        @keyframes success-pop { 0% { transform: rotateY(180deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.15); } 100% { transform: rotateY(180deg) scale(1); } }
-        #modal-win, #modal-install, #modal-settings { display: none; backdrop-filter: blur(8px); }
-        .diff-active { border-color: #6366f1 !important; background-color: #eff6ff !important; color: #1e40af !important; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .card {
+            aspect-ratio: 1 / 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            border: 2px solid #e5e7eb;
+        }
+
+        .card.matched .card-back {
+            background-color: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        #modal-win {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="max-w-md w-full">
-        <div class="bg-white rounded-3xl shadow-2xl p-5 border border-slate-200 relative">
-            
-            <!-- Bouton Options -->
-            <button onclick="openSettings()" class="absolute top-5 right-5 p-2 bg-slate-100 rounded-full text-slate-500 hover:text-indigo-600 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            </button>
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-6">
+        <header class="text-center mb-6">
+            <h1 class="text-2xl font-800 text-gray-800 mb-2">Jeu de Mémoire</h1>
+            <p class="text-gray-500 text-sm">Trouvez toutes les paires !</p>
+        </header>
 
-            <header class="text-center mb-5">
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight uppercase italic">ELEVIO PRO</h1>
-                <div class="flex justify-center gap-4 mt-2">
-                    <span class="text-[10px] font-bold px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full uppercase" id="display-diff">Moyen</span>
-                    <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full uppercase">Record: <span id="best-score">-</span></span>
-                </div>
-            </header>
+        <!-- Sélecteur de Thème -->
+        <div class="flex justify-center gap-4 mb-6">
+            <button onclick="changeTheme('animals')" id="btn-animals" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border-2">🦁 Animaux</button>
+            <button onclick="changeTheme('fruits')" id="btn-fruits" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border-2">🍎 Fruits</button>
+        </div>
 
-            <!-- Stats Bar -->
-            <div class="flex justify-between items-center mb-4 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div class="text-center flex-1">
-                    <p class="text-[9px] uppercase font-bold text-slate-400">Temps</p>
-                    <p id="timer" class="text-lg font-black text-slate-700">00:00</p>
-                </div>
-                <div class="w-px h-8 bg-slate-200"></div>
-                <div class="text-center flex-1">
-                    <p class="text-[9px] uppercase font-bold text-slate-400">Coups</p>
-                    <p id="moves" class="text-lg font-black text-slate-700">0</p>
-                </div>
+        <!-- Stats -->
+        <div class="flex justify-around mb-6 bg-gray-50 p-4 rounded-2xl">
+            <div class="text-center">
+                <span class="block text-[10px] uppercase font-bold text-gray-400">Coups</span>
+                <span id="moves" class="text-xl font-bold">0</span>
             </div>
-
-            <!-- Game Grid -->
-            <div id="grid" class="grid grid-cols-4 gap-2 mb-5"></div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="initGame()" class="bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900 transition-all text-xs uppercase tracking-widest">
-                    Reset
-                </button>
-                <button id="pwa-install-btn" class="bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-all text-xs uppercase tracking-widest">
-                    Installer
-                </button>
+            <div class="text-center">
+                <span class="block text-[10px] uppercase font-bold text-gray-400">Temps</span>
+                <span id="timer" class="text-xl font-bold">00:00</span>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Options / Difficulté -->
-    <div id="modal-settings" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-            <h2 class="text-xl font-black text-slate-800 mb-5 uppercase">Configuration</h2>
-            
-            <p class="text-xs font-bold text-slate-400 uppercase mb-3">Difficulté</p>
-            <div class="grid grid-cols-3 gap-2 mb-6">
-                <button onclick="setDifficulty(6)" id="diff-6" class="difficulty-btn border-2 border-slate-100 p-3 rounded-2xl text-xs font-bold transition-all bg-slate-50">Facile<br><span class="text-[10px] opacity-60">12 cartes</span></button>
-                <button onclick="setDifficulty(8)" id="diff-8" class="difficulty-btn border-2 border-slate-100 p-3 rounded-2xl text-xs font-bold transition-all bg-slate-50">Moyen<br><span class="text-[10px] opacity-60">16 cartes</span></button>
-                <button onclick="setDifficulty(10)" id="diff-10" class="difficulty-btn border-2 border-slate-100 p-3 rounded-2xl text-xs font-bold transition-all bg-slate-50">Expert<br><span class="text-[10px] opacity-60">20 cartes</span></button>
-            </div>
-
-            <button onclick="closeSettings()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl uppercase text-sm shadow-lg shadow-indigo-200">Enregistrer</button>
+        <div id="grid" class="grid-container">
+            <!-- Les cartes sont générées ici -->
         </div>
+
+        <button onclick="initGame()" class="w-full mt-6 bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition-all">
+            Nouvelle Partie
+        </button>
     </div>
 
     <!-- Modal Victoire -->
-    <div id="modal-win" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80">
+    <div id="modal-win">
         <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
-            <div class="text-5xl mb-4">✨</div>
-            <h2 class="text-2xl font-black text-slate-800 mb-1">BRAVO !</h2>
-            <p class="text-slate-500 text-sm mb-6">Niveau complété en <span id="win-moves" class="font-bold text-indigo-600"></span> coups et <span id="win-time" class="font-bold text-indigo-600"></span>.</p>
-            <button onclick="initGame()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl uppercase shadow-lg shadow-indigo-100">Rejouer</button>
+            <div class="text-5xl mb-4">🏆</div>
+            <h2 class="text-2xl font-bold mb-2">Bravo !</h2>
+            <p class="text-gray-500 mb-6">Terminé en <span id="final-moves" class="font-bold text-indigo-600"></span> coups.</p>
+            <button onclick="initGame()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Rejouer</button>
         </div>
     </div>
 
     <script>
-        const emojiPool = ['🦁', '🦊', '🐼', '🐯', '🐸', '🐨', '🦄', '🐝', '🦖', '🐙', '🦋', '🐳', '🦩', '🦚'];
-        let cardsNum = 8; // Défaut : Moyen (8 paires = 16 cartes)
-        let flippedCards = [];
-        let matchedPairs = 0;
-        let moves = 0;
-        let timer = 0;
-        let timerInterval;
-        let isLock = false;
+        const themes = {
+            animals: ['🐶', '🐱', '🦁', '🐯', '🐼', '🐨', '🦊', '🐸'],
+            fruits: ['🍎', '🍓', '🍌', '🍇', '🍉', '🍍', '🥝', '🍒']
+        };
 
-        // Init Game
+        let currentTheme = 'animals';
+        let flippedCards = [];
+        let lockBoard = false;
+        let moves = 0;
+        let matches = 0;
+        let time = 0;
+        let timerInterval;
+
+        function changeTheme(theme) {
+            currentTheme = theme;
+            updateThemeButtons();
+            initGame();
+        }
+
+        function updateThemeButtons() {
+            const btnAnimals = document.getElementById('btn-animals');
+            const btnFruits = document.getElementById('btn-fruits');
+            
+            if (currentTheme === 'animals') {
+                btnAnimals.className = "px-4 py-2 rounded-xl text-sm font-bold bg-indigo-100 text-indigo-700 border-indigo-200";
+                btnFruits.className = "px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 border-transparent";
+            } else {
+                btnFruits.className = "px-4 py-2 rounded-xl text-sm font-bold bg-indigo-100 text-indigo-700 border-indigo-200";
+                btnAnimals.className = "px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 border-transparent";
+            }
+        }
+
         function initGame() {
             clearInterval(timerInterval);
             document.getElementById('modal-win').style.display = 'none';
-            document.getElementById('modal-settings').style.display = 'none';
-            
+            document.getElementById('grid').innerHTML = '';
             flippedCards = [];
-            matchedPairs = 0;
+            lockBoard = false;
             moves = 0;
-            timer = 0;
-            isLock = false;
+            matches = 0;
+            time = 0;
+            document.getElementById('moves').innerText = '0';
+            document.getElementById('timer').innerText = '00:00';
 
-            document.getElementById('moves').innerText = moves;
-            document.getElementById('timer').innerText = "00:00";
-            updateBestScoreDisplay();
+            const items = [...themes[currentTheme], ...themes[currentTheme]];
+            items.sort(() => Math.random() - 0.5);
 
-            // Setup Grid
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            
-            // Adapter les colonnes si Expert
-            grid.className = cardsNum > 8 ? "grid grid-cols-4 gap-2 mb-5" : "grid grid-cols-4 gap-2 mb-5";
-
-            const selectedEmojis = emojiPool.slice(0, cardsNum);
-            const deck = [...selectedEmojis, ...selectedEmojis].sort(() => Math.random() - 0.5);
-
-            deck.forEach(emoji => {
+            items.forEach(emoji => {
                 const card = document.createElement('div');
-                card.className = 'memory-card';
+                card.className = 'card';
                 card.dataset.emoji = emoji;
-                card.innerHTML = `<div class="card-inner"><div class="card-front"></div><div class="card-back">${emoji}</div></div>`;
-                card.onclick = flipCard;
-                grid.appendChild(card);
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">?</div>
+                        <div class="card-back">${emoji}</div>
+                    </div>
+                `;
+                card.addEventListener('click', flipCard);
+                document.getElementById('grid').appendChild(card);
             });
 
             startTimer();
+            updateThemeButtons();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                time++;
+                const mins = Math.floor(time / 60).toString().padStart(2, '0');
+                const secs = (time % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${mins}:${secs}`;
+            }, 1000);
         }
 
         function flipCard() {
-            if (isLock || this.classList.contains('flipped')) return;
+            if (lockBoard || this.classList.contains('flipped')) return;
 
             this.classList.add('flipped');
             flippedCards.push(this);
@@ -170,94 +221,33 @@
         }
 
         function checkMatch() {
-            isLock = true;
-            const [c1, c2] = flippedCards;
-
-            if (c1.dataset.emoji === c2.dataset.emoji) {
-                c1.classList.add('matched');
-                c2.classList.add('matched');
-                matchedPairs++;
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matches++;
                 flippedCards = [];
-                isLock = false;
-
-                if (matchedPairs === cardsNum) win();
+                if (matches === themes[currentTheme].length) win();
             } else {
+                lockBoard = true;
                 setTimeout(() => {
-                    c1.classList.remove('flipped');
-                    c2.classList.remove('flipped');
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
                     flippedCards = [];
-                    isLock = false;
-                }, 800);
+                    lockBoard = false;
+                }, 1000);
             }
-        }
-
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timer++;
-                const m = Math.floor(timer / 60).toString().padStart(2, '0');
-                const s = (timer % 60).toString().padStart(2, '0');
-                document.getElementById('timer').innerText = `${m}:${s}`;
-            }, 1000);
         }
 
         function win() {
             clearInterval(timerInterval);
-            saveBestScore();
-            document.getElementById('win-moves').innerText = moves;
-            document.getElementById('win-time').innerText = document.getElementById('timer').innerText;
-            setTimeout(() => document.getElementById('modal-win').style.display = 'flex', 500);
+            document.getElementById('final-moves').innerText = moves;
+            setTimeout(() => {
+                document.getElementById('modal-win').style.display = 'flex';
+            }, 500);
         }
 
-        // Difficulté
-        function setDifficulty(num) {
-            cardsNum = num;
-            const names = {6: 'Facile', 8: 'Moyen', 10: 'Expert'};
-            document.getElementById('display-diff').innerText = names[num];
-            
-            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('diff-active'));
-            document.getElementById('diff-' + num).classList.add('diff-active');
-            
-            initGame();
-        }
-
-        function openSettings() { document.getElementById('modal-settings').style.display = 'flex'; }
-        function closeSettings() { document.getElementById('modal-settings').style.display = 'none'; }
-
-        // Highscore (Local Storage)
-        function saveBestScore() {
-            const key = 'best_' + cardsNum;
-            const currentBest = localStorage.getItem(key);
-            if (!currentBest || moves < parseInt(currentBest)) {
-                localStorage.setItem(key, moves);
-            }
-        }
-
-        function updateBestScoreDisplay() {
-            const best = localStorage.getItem('best_' + cardsNum);
-            document.getElementById('best-score').innerText = best ? best : '-';
-        }
-
-        // PWA Setup
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-
-        document.getElementById('pwa-install-btn').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                await deferredPrompt.userChoice;
-                deferredPrompt = null;
-            } else {
-                alert("Pour installer : sur iPhone, utilisez 'Sur l'écran d'accueil' dans Safari. Sur Android, utilisez le menu du navigateur.");
-            }
-        };
-
-        // Lancement
-        window.onload = () => {
-            setDifficulty(8); // Par défaut Moyen
-        };
+        window.onload = initGame;
     </script>
 </body>
 </html>
