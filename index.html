@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Memoire Pro">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#6366f1">
-    <link rel="apple-touch-icon" href="logo%20transparent.png">
+    <link rel="apple-touch-icon" href="logo transparent.png">
 
     <!-- Manifeste Web JSON -->
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22/index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo%20transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
@@ -94,9 +94,9 @@
         <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
             <header class="text-center mb-6">
                 <div class="flex justify-center mb-4">
-                    <!-- Utilisation d'un conteneur avec fallback SVG si l'image est manquante -->
-                    <div id="logo-container" class="h-16 w-16 flex items-center justify-center bg-indigo-100 rounded-2xl overflow-hidden">
-                        <img id="app-logo" src="logo%20transparent.png" alt="Logo" class="h-full w-full object-contain hidden">
+                    <!-- Conteneur du logo -->
+                    <div id="logo-container" class="h-16 w-16 flex items-center justify-center bg-indigo-50 rounded-2xl overflow-hidden border border-indigo-100">
+                        <img id="app-logo" src="logo transparent.png" alt="Logo" class="h-full w-full object-contain hidden">
                         <span id="logo-fallback" class="text-3xl">🧩</span>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
         const appLogo = document.getElementById('app-logo');
         const logoFallback = document.getElementById('logo-fallback');
         
-        // Gestion robuste de l'affichage du logo
+        // Gestion de l'affichage du logo
         appLogo.onload = () => {
             appLogo.classList.remove('hidden');
             logoFallback.classList.add('hidden');
@@ -200,16 +200,8 @@
         appLogo.onerror = () => {
             appLogo.classList.add('hidden');
             logoFallback.classList.remove('hidden');
-            console.log("Image non trouvée : logo transparent.png");
+            console.warn("L'image 'logo transparent.png' n'a pas pu être chargée.");
         };
-
-        // Service Worker (pour forcer PWA)
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('fetch', function(event) { event.respondWith(fetch(event.request)); });`;
-            const blob = new Blob([swCode], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(url).catch(() => {});
-        }
 
         const themes = {
             space: ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'],
