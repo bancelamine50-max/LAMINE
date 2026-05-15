@@ -2,8 +2,17 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Memoire Pro Lamine Bance</title>
+    
+    <!-- Configuration Application Mobile (PWA) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Memoire Pro">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="logo transparent.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -22,6 +31,7 @@
             align-items: center;
             margin: 0;
             padding: 10px;
+            overscroll-behavior: contain;
         }
         .memory-card {
             perspective: 1000px;
@@ -88,14 +98,21 @@
                 <p class="text-slate-500 text-sm font-medium">Entraînez votre cerveau au quotidien</p>
             </header>
 
-            <!-- Description du jeu -->
+            <!-- Description du jeu et Installation -->
             <div class="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 text-center">Comment jouer</h2>
-                <p class="text-slate-600 text-sm leading-relaxed text-center">
-                    Le but est de retrouver toutes les <strong>paires identiques</strong>. 
-                    Retournez deux cartes : si elles se ressemblent, elles restent visibles, sinon elles se cachent à nouveau. 
-                    Mémorisez leur position pour finir la grille le plus vite possible !
-                </p>
+                <div class="mb-3 text-center">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Comment jouer</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Retrouvez toutes les <strong>paires identiques</strong> le plus vite possible !
+                    </p>
+                </div>
+                <div class="pt-3 border-t border-slate-200">
+                    <h2 class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1 text-center">Installer en App</h2>
+                    <p class="text-slate-500 text-[11px] text-center italic">
+                        iPhone : Partager > Sur l'écran d'accueil<br>
+                        Android : Menu ⋮ > Installer l'application
+                    </p>
+                </div>
             </div>
 
             <!-- Menu de sélection de thème -->
