@@ -13,8 +13,8 @@
     <meta name="theme-color" content="#6366f1">
     <link rel="apple-touch-icon" href="logo transparent.png">
 
-    <!-- Manifeste Web JSON (Incrusté pour aider l'installation) -->
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo%20transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+    <!-- Manifeste Web JSON -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Memoire%20Pro%20Lamine%20Bance%22,%22short_name%22:%22MemoirePro%22,%22start_url%22:%22/index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#6366f1%22,%22icons%22:[{%22src%22:%22logo%20transparent.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -94,7 +94,11 @@
         <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
             <header class="text-center mb-6">
                 <div class="flex justify-center mb-4">
-                    <img src="logo transparent.png" alt="Logo Elevio" class="h-16 w-auto object-contain transition-opacity duration-500" onload="this.style.opacity=1" style="opacity:0" onerror="this.parentElement.style.display='none'">
+                    <!-- Utilisation d'un conteneur avec fallback SVG si l'image est manquante -->
+                    <div id="logo-container" class="h-16 w-16 flex items-center justify-center bg-indigo-100 rounded-2xl">
+                        <img id="app-logo" src="logo transparent.png" alt="Logo" class="h-full w-full object-contain hidden" onload="this.classList.remove('hidden')">
+                        <span id="logo-fallback" class="text-3xl">🧩</span>
+                    </div>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Memoire Pro Lamine Bance</h1>
                 <p class="text-slate-500 text-sm font-medium">Entraînez votre cerveau au quotidien</p>
@@ -104,10 +108,10 @@
             <div id="install-banner" class="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex flex-col items-center gap-3">
                 <div class="text-center">
                     <h2 class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1">Jouer en mode Application</h2>
-                    <p class="text-indigo-900 text-sm font-semibold text-center">Installez le jeu sur votre écran d'accueil</p>
+                    <p class="text-indigo-900 text-sm font-semibold text-center">Ajoutez le jeu à votre écran d'accueil</p>
                 </div>
                 <button onclick="document.getElementById('modal-install').style.display='flex'" class="text-xs bg-indigo-600 text-white px-4 py-2 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-colors">
-                    Installer maintenant
+                    Mode d'emploi
                 </button>
             </div>
 
@@ -146,29 +150,30 @@
     <!-- Modal Instructions Installation -->
     <div id="modal-install" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-            <h2 class="text-xl font-bold text-slate-800 mb-4 text-center">Installer l'application</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 text-center">Comment Installer</h2>
             
             <div class="space-y-6">
-                <!-- Méthode Android -->
-                <div id="android-prompt" class="flex gap-4">
+                <div class="flex gap-4">
                     <div class="text-2xl">🤖</div>
                     <div>
                         <p class="font-bold text-slate-700 text-sm">Sur Android (Chrome)</p>
-                        <button id="btn-pwa-install" class="hidden mb-2 w-full bg-indigo-600 text-white text-[10px] py-1 rounded font-bold">Cliquer pour installer</button>
-                        <p class="text-slate-500 text-xs">Ou appuyez sur les <span class="font-bold text-slate-700">trois points ⋮</span> en haut à droite, puis choisissez <span class="text-indigo-600 font-bold">"Installer l'application"</span>.</p>
+                        <p class="text-slate-500 text-xs text-pretty">
+                            Cliquez sur les <span class="font-bold text-slate-800">3 points ⋮</span> en haut à droite et sélectionnez <span class="text-indigo-600 font-bold">"Installer l'application"</span> ou <span class="text-indigo-600 font-bold">"Ajouter à l'écran d'accueil"</span>.
+                        </p>
                     </div>
                 </div>
-                <!-- Méthode iPhone -->
                 <div class="flex gap-4">
                     <div class="text-2xl">🍏</div>
                     <div>
                         <p class="font-bold text-slate-700 text-sm">Sur iPhone (Safari)</p>
-                        <p class="text-slate-500 text-xs text-pretty">Appuyez sur l'icône de <span class="font-bold text-slate-700">Partage</span> (le carré avec une flèche), puis descendez pour choisir <span class="text-indigo-600 font-bold">"Sur l'écran d'accueil"</span>.</p>
+                        <p class="text-slate-500 text-xs text-pretty">
+                            Appuyez sur l'icône de <span class="font-bold text-slate-800">Partage</span> (le carré avec une flèche), puis descendez pour choisir <span class="text-indigo-600 font-bold">"Sur l'écran d'accueil"</span>.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full mt-8 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors">Fermer</button>
+            <button onclick="document.getElementById('modal-install').style.display='none'" class="w-full mt-8 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors">J'ai compris</button>
         </div>
     </div>
 
@@ -183,6 +188,23 @@
     </div>
 
     <script>
+        // Gestion de l'affichage du logo (masque le fallback si l'image charge)
+        const appLogo = document.getElementById('app-logo');
+        const logoFallback = document.getElementById('logo-fallback');
+        
+        appLogo.onerror = () => {
+            appLogo.style.display = 'none';
+            logoFallback.style.display = 'block';
+        };
+
+        // Service Worker (pour forcer PWA)
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(event) { event.respondWith(fetch(event.request)); });`;
+            const blob = new Blob([swCode], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(url).catch(() => {});
+        }
+
         const themes = {
             space: ['🚀', '🛸', '🛰️', '🌍', '🌕', '⭐', '☄️', '👨‍🚀'],
             animals: ['🐶', '🐱', '🦁', '🐯', '🐼', '🐨', '🦊', '🐸'],
@@ -190,42 +212,17 @@
         };
 
         let currentTheme = 'space';
-        let cards = [];
         let flippedCards = [];
         let lockBoard = false;
         let moves = 0;
         let matchedPairs = 0;
         let timerSeconds = 0;
         let timerInterval = null;
-        let deferredPrompt;
 
         const gridEl = document.getElementById('grid');
         const movesEl = document.getElementById('moves');
         const timerEl = document.getElementById('timer');
         const modal = document.getElementById('modal-win');
-        const installBtn = document.getElementById('btn-pwa-install');
-
-        // Gestion de l'installation PWA (Android principalement)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.classList.remove('hidden');
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('install-banner').style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            document.getElementById('install-banner').style.display = 'none';
-        });
 
         function startTimer() {
             clearInterval(timerInterval);
@@ -264,7 +261,7 @@
             const items = [...themes[currentTheme], ...themes[currentTheme]];
             items.sort(() => Math.random() - 0.5);
 
-            items.forEach((emoji, index) => {
+            items.forEach((emoji) => {
                 const card = document.createElement('div');
                 card.className = 'memory-card';
                 card.dataset.emoji = emoji;
